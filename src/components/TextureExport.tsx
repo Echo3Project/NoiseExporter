@@ -217,7 +217,7 @@ export const TextureExport = forwardRef(function TextureExport({}, ref): ReactEl
         bottom={-0.5 * chunkSize}
         position={[0, 0, 1]}
       />
-      <Plane args={[1 * chunkSize, 1 * chunkSize]} position={[0, 0, 0]}>
+      <Plane args={[5, 5]} position={[0, 0, 0]}>
         {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
         {/* @ts-ignore */}
         <noiseMaterial
