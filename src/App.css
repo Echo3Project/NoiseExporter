@@ -1,0 +1,67 @@
+html, body {
+  margin: 0;
+  padding: 0;
+  background-color: #A4A4A4;
+}
+
+#root {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100dvh;
+  width: 100%;
+}
+
+canvas {
+  width: 512px;
+  height: 512px;
+  background-color: #000;
+}
+
+canvas.saving {
+  width: 64px !important;
+  height: 64px !important;
+  aspect-ratio: 1/1 !important;
+  background-color: #000;
+}
+
+.canvasWrapper {
+  position: relative;
+}
+
+.canvas {
+  height: 100% !important;
+  width: 100% !important;
+  display: flex !important;
+  overflow: visible !important;
+  justify-content: center;
+  align-items: center;
+}
+
+.grid {
+  position: absolute;
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+}
+
+.grid div {
+  width: calc(20% - 2px);
+  height: calc(20% - 2px);
+  border: 1px solid red;
+}
+.button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+button {
+  margin: 10px 0;
+  padding: 10px;
+  border: 1px solid #000;
+  background-color: #fff;
+  cursor: pointer;
+}
