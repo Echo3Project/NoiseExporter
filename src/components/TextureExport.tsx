@@ -17,6 +17,9 @@ const NoiseMaterial = shaderMaterial(
     power: 1.2,
     x: 0,
     y: 0,
+    preview: false,
+    previewX: -1,
+    previewY: -1,
   },
   // vertex shader
   /*glsl*/ `
@@ -37,6 +40,9 @@ const NoiseMaterial = shaderMaterial(
     uniform float power;
     uniform float x;
     uniform float y;
+    uniform bool preview;
+    uniform float previewX;
+    uniform float previewY;
 
     vec4 mod289(vec4 x)
     {
@@ -101,8 +107,17 @@ const NoiseMaterial = shaderMaterial(
         float rnoise = cnoise(vec2(noise));
         float smoothnoise = smoothstep(start, stop, rnoise);
         vec3 color = vec3(smoothnoise * (step(force, smoothnoise)));
-        gl_FragColor.rgb = color;
-        gl_FragColor.a   = color.x;
+
+        float pct = 0.0;
+        if (preview && (previewX < 0. || previewY < 0.))
+          pct = step(0.495, distance(vUv, vec2(0.5)));
+        if (preview && previewX > -1. && previewY > -1.)
+          pct = step(2.495, distance(vUv + vec2(previewX, previewY), vec2(2.5, 2.5)));
+
+        gl_FragColor.rgb = color * (1. - vec3(pct));
+        // gl_FragColor.rgb = color;
+        gl_FragColor.a   = color.x - pct;
+        // gl_FragColor.rgba = vec4(pct, 0, 0, 1);
     }
     `
 );
@@ -113,7 +128,7 @@ export const TextureExport = forwardRef(function TextureExport({}, ref): ReactEl
   const noisem = useRef<ShaderMaterial>(null);
   const [chunkSize, setChunkSize] = useState(5);
 
-  const { size, start, stop, force, power, x, y } = useControls({
+  const { size, start, stop, force, power, x, y, preview, previewX, previewY } = useControls({
     size: {
       value: 4.4,
       min: 0.1,
@@ -156,6 +171,21 @@ export const TextureExport = forwardRef(function TextureExport({}, ref): ReactEl
       max: 10,
       step: 0.01,
     },
+    preview: {
+      value: false,
+    },
+    previewX: {
+      value: -1,
+      min: -1,
+      max: 4,
+      step: 1,
+    },
+    previewY: {
+      value: -1,
+      min: -1,
+      max: 4,
+      step: 1,
+    },
   });
 
   function Save() {
@@ -168,11 +198,14 @@ export const TextureExport = forwardRef(function TextureExport({}, ref): ReactEl
     (camera as Camera & {right: number}).right = 0.5;
     gl.domElement.classList.add("saving");
     if (!noisem.current) return;
+    noisem.current.uniforms.preview.value = true;
     noisem.current.uniforms.size.value = size / 5;
     for (let i = 1; i <= 5; i++) {
       setTimeout(() => {
         if (!noisem.current) return;
+        noisem.current.uniforms.previewY.value = i - 1;
         for (let j = 1; j <= 5; j++) {
+        noisem.current.uniforms.previewX.value = 5 - j;
           let downloadLink = document.createElement("a");
           downloadLink.setAttribute("download", `${i}_${j}.png`);
           let canvas = gl.domElement;
@@ -197,6 +230,9 @@ export const TextureExport = forwardRef(function TextureExport({}, ref): ReactEl
         noisem.current.uniforms.x.value = 0;
         noisem.current.uniforms.y.value = 0;
         noisem.current.uniforms.size.value = size * 1;
+        noisem.current.uniforms.preview.value = false;
+        noisem.current.uniforms.previewX.value = -1;
+        noisem.current.uniforms.previewY.value = -1;
     }, 6000);
   }
 
@@ -217,7 +253,7 @@ export const TextureExport = forwardRef(function TextureExport({}, ref): ReactEl
         bottom={-0.5 * chunkSize}
         position={[0, 0, 1]}
       />
-      <Plane args={[5, 5]} position={[0, 0, 0]}>
+      <Plane args={[7.7, 7.7]} position={[0, 0, 0]}>
         {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
         {/* @ts-ignore */}
         <noiseMaterial
@@ -230,6 +266,9 @@ export const TextureExport = forwardRef(function TextureExport({}, ref): ReactEl
           power={power}
           x={x}
           y={y}
+          preview={preview}
+          previewX={previewX}
+          previewY={previewY}
           transparent
         />
       </Plane>
