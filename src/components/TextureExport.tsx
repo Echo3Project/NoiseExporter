@@ -199,7 +199,7 @@ export const TextureExport = forwardRef(function TextureExport({}, ref): ReactEl
     gl.domElement.classList.add("saving");
     if (!noisem.current) return;
     noisem.current.uniforms.preview.value = true;
-    noisem.current.uniforms.size.value = size / 5;
+    // noisem.current.uniforms.size.value = size / 5;
     for (let i = 1; i <= 5; i++) {
       setTimeout(() => {
         if (!noisem.current) return;
@@ -233,7 +233,7 @@ export const TextureExport = forwardRef(function TextureExport({}, ref): ReactEl
         noisem.current.uniforms.preview.value = false;
         noisem.current.uniforms.previewX.value = -1;
         noisem.current.uniforms.previewY.value = -1;
-    }, 6000);
+    }, 7000);
   }
 
   useImperativeHandle(ref, function getRefValue() {
